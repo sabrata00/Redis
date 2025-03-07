@@ -126,6 +126,20 @@ func (u *NewsUsecaseImpl) UpdateNews(ctx context.Context, news *entity.News) err
 	return nil
 }
 
+func (u *NewsUsecaseImpl) DeleteNews(ctx context.Context, id int) error {
+	cacheKey := fmt.Sprintf("news:%d", id)
+
+	if err := u.Repo.DeleteNews(id); err != nil {
+		logrus.WithError(err).Error("Failed to delete news from database")
+		return err
+	}
+
+	// Hapus cache
+	invalidateCache(ctx, cacheKey)
+	logrus.WithField("news_id", id).Info("Cache invalidated after news deletion")
+	return nil
+}
+
 // func (u *NewsUsecaseImpl) UpdateNews(ctx context.Context, news *entity.News) error {
 // 	cacheKey := fmt.Sprintf("news:%d", news.ID)
 
@@ -150,17 +164,3 @@ func (u *NewsUsecaseImpl) UpdateNews(ctx context.Context, news *entity.News) err
 // 	logrus.WithField("news_id", news.ID).Info("Cache updated after news update")
 // 	return nil
 // }
-
-func (u *NewsUsecaseImpl) DeleteNews(ctx context.Context, id int) error {
-	cacheKey := fmt.Sprintf("news:%d", id)
-
-	if err := u.Repo.DeleteNews(id); err != nil {
-		logrus.WithError(err).Error("Failed to delete news from database")
-		return err
-	}
-
-	// Hapus cache
-	invalidateCache(ctx, cacheKey)
-	logrus.WithField("news_id", id).Info("Cache invalidated after news deletion")
-	return nil
-}
