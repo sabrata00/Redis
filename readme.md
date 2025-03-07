@@ -95,7 +95,6 @@ DB_NAME=newsdb
 REDIS_HOST=localhost
 REDIS_PORT=6379
 REDIS_DB=0
-REDIS_EXPIRATION=10s
 ```
 
 ### 3.4 Jalankan Aplikasi
